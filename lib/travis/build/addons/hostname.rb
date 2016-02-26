@@ -2,6 +2,8 @@ module Travis
   module Build
     class Addons
       class Hostname < Base
+        SUPER_USER_SAFE = true
+
         def after_prepare
           sh.echo "Set hostname to #{hostname}", ansi: :yellow
           sh.cmd "sudo hostname #{hostname}", echo: true
