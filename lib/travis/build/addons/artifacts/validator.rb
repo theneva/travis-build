@@ -12,7 +12,7 @@ module Travis
 
           def initialize(data, config)
             @data = data
-            @config = config
+            @config = config.tap {|cfg| puts "config: #{cfg}"}
             @errors = []
           end
 
