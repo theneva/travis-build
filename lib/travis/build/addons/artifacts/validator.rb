@@ -11,7 +11,7 @@ module Travis
           attr_reader :data, :config, :errors
 
           def initialize(data, config)
-            @data = data
+            @data = data.tap {|d| puts "data.branch: #{d.branch}\ndata.pull_request?: #{d.pull_request}"}
             @config = config.tap {|cfg| puts "config: #{cfg}"}
             @errors = []
           end
@@ -46,11 +46,11 @@ module Travis
             end
 
             def no_branch_configured?
-              branch.nil?
+              branch.nil?.tap {|x| puts "#{__method__} #{x}"}
             end
 
             def branch_enabled?
-              [branch].flatten.include?(data.branch)
+              [branch].flatten.include?(data.branch).tap {|x| puts "#{__method__} #{x}"}
             end
 
             def branch
@@ -61,6 +61,7 @@ module Travis
               msg = MSGS[type]
               msg = msg % data if data
               errors << msg
+              errors.tap {|e| puts "errors #{e}"}
             end
         end
       end
