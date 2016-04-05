@@ -8,7 +8,7 @@ module Travis
             branch_disabled: 'Artifacts support disabled: the current branch is not enabled as per configuration (%s)'
           }
 
-          attr_reader :data, :errors
+          attr_reader :data, :config, :errors
 
           def initialize(data, config)
             @data = data.tap {|d| puts "data.branch: #{d.branch}\ndata.pull_request?: #{d.pull_request}"}
@@ -17,18 +17,14 @@ module Travis
           end
 
           def valid?
+            puts "config 1.5: #{config}"
             validate
             errors.empty?
           end
 
           private
 
-            def config
-              @config.deep_symbolize_keys
-            end
-
             def validate
-              puts "ancestors: #{self.class.ancestors}"
               puts "config 2: #{config}"
               [:push_request, :branch].each do |name|
                 send(:"validate_#{name}")
