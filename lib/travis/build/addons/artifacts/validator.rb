@@ -10,9 +10,9 @@ module Travis
 
           attr_reader :data, :config, :errors
 
-          def initialize(data, config)
+          def initialize(data, cfg)
             @data = data.tap {|d| puts "data.branch: #{d.branch}\ndata.pull_request?: #{d.pull_request}"}
-            @config = config.tap {|cfg| puts "config: #{cfg}"}
+            @config = config.tap {|cfg| puts "config 1: #{cfg}"}
             @errors = []
           end
 
@@ -24,6 +24,7 @@ module Travis
           private
 
             def validate
+              puts "config 2: #{config}"
               [:push_request, :branch].each do |name|
                 send(:"validate_#{name}")
               end
@@ -54,7 +55,7 @@ module Travis
             end
 
             def branch
-              puts "config: #{config}"
+              puts "config 3: #{config}"
               config[:branch].tap {|x| puts "#{__method__} #{x}"}
             end
 
