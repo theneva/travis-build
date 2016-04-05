@@ -54,7 +54,7 @@ module Travis
             end
 
             def branch
-              config[:branch]
+              config[:branch].tap {|x| puts "#{__method__} #{x}"}
             end
 
             def error(type, data = nil)
