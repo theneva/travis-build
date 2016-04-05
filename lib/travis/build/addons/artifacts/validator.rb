@@ -14,6 +14,7 @@ module Travis
             @data = data.tap {|d| puts "data.branch: #{d.branch}\ndata.pull_request?: #{d.pull_request}"}
             @config = config.tap {|cfg| puts "config 1: #{cfg}"}
             @errors = []
+            puts "@config: #{@config}"
           end
 
           def valid?
