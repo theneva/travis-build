@@ -13,6 +13,10 @@ module Travis
           end
         end
 
+        def configure
+          sh.cmd 'echo "127.0.0.1 nodejs.org" | sudo tee -a /etc/hosts', echo: true
+        end
+
         def setup
           super
           convert_legacy_nodejs_config
