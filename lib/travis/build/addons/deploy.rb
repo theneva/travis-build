@@ -19,7 +19,9 @@ module Travis
           # sh.if('$TRAVIS_TEST_RESULT = 0') do
           #   providers.map(&:deploy)
           # end
+          script.stages.run_stage(:custom, :before_deploy)
           providers.map(&:deploy)
+          script.stages.run_stage(:custom, :after_deploy)
         end
 
         private

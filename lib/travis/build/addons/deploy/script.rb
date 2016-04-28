@@ -100,10 +100,8 @@ module Travis
             end
 
             def run
-              script.stages.run_stage(:custom, :before_deploy)
               sh.fold('dpl.0') { install }
               cmd(run_command, echo: false, assert: false, timing: true)
-              script.stages.run_stage(:custom, :after_deploy)
             end
 
             def install(edge = config[:edge])
