@@ -14,6 +14,7 @@ require 'travis/build/appliances/home_paths'
 require 'travis/build/appliances/put_localhost_first'
 require 'travis/build/appliances/services'
 require 'travis/build/appliances/setup_apt_cache'
+require 'travis/build/appliances/set_ulimit'
 require 'travis/build/appliances/show_system_info'
 require 'travis/build/appliances/validate'
 
