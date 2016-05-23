@@ -10,7 +10,7 @@ module Travis
 
         def apply
           ULIMITS.each do |flag, new_value|
-            sh.cmd "ulimit -#{flag} #{new_value}"
+            sh.cmd "ulimit -#{flag} #{new_value}", echo: true
           end
         end
       end
