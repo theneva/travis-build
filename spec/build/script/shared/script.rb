@@ -46,6 +46,7 @@ shared_examples_for 'a build script sexp' do
   it_behaves_like 'paranoid mode on/off'
   it_behaves_like 'disables OpenSSH roaming'
   it_behaves_like 'fix ps4'
+  it_behaves_like 'set ulimit'
   it_behaves_like 'setup apt cache'
   it_behaves_like 'fix etc/hosts'
   it_behaves_like 'fix resolve.conf'

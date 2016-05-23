@@ -13,10 +13,6 @@ module Travis
             sh.cmd "ulimit -#{flag} #{new_value}"
           end
         end
-
-        def apply?
-          true
-        end
       end
     end
   end
