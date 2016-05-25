@@ -101,6 +101,10 @@ module Travis
         !!job[:secure_env_enabled]
       end
 
+      def encrypted_env_removed?
+        !!data[:encrypted_env_removed]
+      end
+
       def disable_sudo?
         !!data[:paranoid]
       end
