@@ -23,6 +23,7 @@ module Travis
         data = data.deep_symbolize_keys
         defaults = defaults.deep_symbolize_keys
         @data = DEFAULTS.deep_merge(defaults.deep_merge(data))
+        puts "data=#{@data}"
       end
 
       def [](key)
