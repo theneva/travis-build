@@ -36,6 +36,14 @@ describe Travis::Build::Addons::Browserstack, :sexp do
     it { should include_sexp [:cmd, "#{described_class::BROWSERSTACK_HOME}/BrowserStackLocal -d start #{config[:access_key]} -localIdentifier $BROWSERSTACK_LOCAL_IDENTIFIER"] }
   end
 
+  describe 'with username and access_key' do
+    let(:config) { { os: 'linux', username: 'user1', access_key: 'accesskey' } }
+
+    it_behaves_like 'installs browserstack local'
+    it { should include_sexp [:export, ["#{described_class::ENV_USER}", config[:username]], {:echo => true}] }
+    it { should include_sexp [:cmd, "#{described_class::BROWSERSTACK_HOME}/BrowserStackLocal -d start #{config[:access_key]} -localIdentifier $BROWSERSTACK_LOCAL_IDENTIFIER"] }
+  end
+
   describe 'with access_key and folder path' do
     let(:config) { { os: 'linux', access_key: 'accesskey', folder: 'path/to/user/folder' } }
 
