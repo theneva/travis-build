@@ -44,6 +44,7 @@ module Travis
         def export
           super
           sh.export 'TRAVIS_R_VERSION', r_version, echo: false
+          sh.export 'TRAVIS_R_VERSION_STRING', config[:r].to_s, echo: false
           sh.export 'R_LIBS_USER', '~/R/Library', echo: false
           sh.export 'R_LIBS_SITE', '/usr/local/lib/R/site-library:/usr/lib/R/site-library', echo: false
           sh.export '_R_CHECK_CRAN_INCOMING_', 'false', echo: false
@@ -121,13 +122,26 @@ module Travis
                 # output.
                 sh.cmd 'brew update >/dev/null', retry: true
 
+                if r_version == r_latest
+                  r_url = "#{repos[:CRAN]}/bin/macosx/R-latest.pkg"
+
+                # 3.2.5 was never built for OS X so
+                # we need to use 3.2.4-revised, which is the same codebase
+                # https://stat.ethz.ch/pipermail/r-devel/2016-May/072642.html
+                elsif r_version == '3.2.5'
+                  r_url = "#{repos[:CRAN]}/bin/macosx/old/R-3.2.4-revised.pkg"
+
+                # all other binaries are in /bin/macosx/old
+                else
+                  r_url = "#{repos[:CRAN]}/bin/macosx/old/R-#{r_version}.pkg"
+                end
+
                 # Install from latest CRAN binary build for OS X
-                sh.cmd "wget #{repos[:CRAN]}/bin/macosx/R-latest.pkg "\
-                  '-O /tmp/R-latest.pkg'
+                sh.cmd "curl -Lo /tmp/R.pkg #{r_url}", retry: true
 
                 sh.echo 'Installing OS X binary package for R'
-                sh.cmd 'sudo installer -pkg "/tmp/R-latest.pkg" -target /'
-                sh.rm '/tmp/R-latest.pkg'
+                sh.cmd 'sudo installer -pkg "/tmp/R.pkg" -target /'
+                sh.rm '/tmp/R.pkg'
 
               else
                 sh.failure "Operating system not supported: #{config[:os]}"
@@ -336,9 +350,10 @@ module Travis
         def install_deps
           setup_devtools
           install_script =
-            'deps <- devtools::install_deps(dependencies = TRUE);'\
-            'if (!all(deps %in% installed.packages())) {'\
-            ' message("missing: ", paste(setdiff(deps, installed.packages()), collapse=", "));'\
+            'deps <- devtools::dev_package_deps(dependencies = TRUE);'\
+            'devtools::install_deps(dependencies = TRUE);'\
+            'if (!all(deps$package %in% installed.packages())) {'\
+            ' message("missing: ", paste(setdiff(deps$package, installed.packages()), collapse=", "));'\
             ' q(status = 1, save = "no")'\
             '}'
           sh.cmd "Rscript -e '#{install_script}'"
@@ -351,19 +366,23 @@ module Travis
         end
 
         def dump_logs
-          sh.fold "Check logs" do
-            export_rcheck_dir
-            sh.echo 'R CMD check logs', ansi: :yellow
-            ['out', 'log', 'fail'].each do |ext|
-              cmd =
-                'for name in '\
-                "$(find \"${RCHECK_DIR}\" -type f -name \"*#{ext}\");"\
-              'do '\
-                'echo ">>> Filename: ${name} <<<";'\
-                'cat ${name};'\
-                'done'
-              sh.cmd cmd
-            end
+          export_rcheck_dir
+          dump_log("fail")
+          dump_log("log")
+          dump_log("out")
+        end
+
+        def dump_log(type)
+          sh.fold "#{type} logs" do
+            sh.echo "R CMD check #{type} logs", ansi: :yellow
+            cmd =
+              'for name in '\
+              "$(find \"${RCHECK_DIR}\" -type f -name \"*#{type}\");"\
+            'do '\
+              'echo ">>> Filename: ${name} <<<";'\
+              'cat ${name};'\
+              'done'
+            sh.cmd cmd
           end
         end
 
@@ -470,10 +489,11 @@ module Travis
         def normalized_r_version
           v = config[:r].to_s
           case v
-          when 'release' then '3.2.5'
-          when 'oldrel' then '3.1.3'
+          when 'release' then '3.3.0'
+          when 'oldrel' then '3.2.5'
           when '3.1' then '3.1.3'
           when '3.2' then '3.2.5'
+          when '3.3' then '3.3.0'
           when 'bioc-devel'
             config[:bioc_required] = true
             config[:bioc_use_devel] = true
@@ -485,6 +505,10 @@ module Travis
             normalized_r_version
           else v
           end
+        end
+
+        def r_latest
+          '3.3.0'
         end
 
         def repos
