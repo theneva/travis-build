@@ -30,6 +30,8 @@ module Travis
               archive = "http://s3.hex.pm/builds/elixir/v#{elixir_version}.zip"
               sh.echo "Installing Elixir #{elixir_version}"
               sh.cmd "wget #{archive}", assert: true, timing: true
+              sh.mkdir KIEX_ELIXIR_HOME, recursive: true
+              sh.mkdir KIEX_MIX_HOME, recursive: true
               sh.cmd "unzip -d #{KIEX_ELIXIR_HOME}/elixir-#{elixir_version} v#{elixir_version}.zip 2>&1 > /dev/null", echo: false
               sh.cmd "echo 'export ELIXIR_VERSION=#{elixir_version}
 export PATH=#{KIEX_ELIXIR_HOME}elixir-#{elixir_version}/bin:$PATH
