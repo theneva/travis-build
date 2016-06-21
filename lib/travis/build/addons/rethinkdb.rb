@@ -5,7 +5,7 @@ module Travis
   module Build
     class Addons
       class Rethinkdb < Base
-        SUPER_USER_SAFE = true
+        SUPER_USER_SAFE = false
 
         RETHINKDB_GPG_KEY = '0x3A8F2399'
 
@@ -18,7 +18,7 @@ module Travis
               sh.echo "Installing RethinkDB version #{rethinkdb_version}", ansi: :yellow
               sh.cmd "service rethinkdb stop", sudo: true
               sh.cmd "apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 #{RETHINKDB_GPG_KEY}", sudo: true
-              sh.cmd 'echo -e "\ndeb http://download.rethinkdb.com/apt $(lsb_release -cs) main" >> /etc/apt/sources.list', sudo: true
+              sh.cmd 'echo -e "\ndeb http://download.rethinkdb.com/apt $(lsb_release -cs) main" | sudo tee -a /etc/apt/sources.list >/dev/null'
               sh.cmd "apt-get update -qq", assert: false, sudo: true
               sh.cmd "package_version=#{rethinkdb_version}$(lsb_release -cs)"
               sh.cmd "apt-get install -y -o Dpkg::Options::='--force-confnew' rethinkdb=$package_version", sudo: true, echo: true, timing: true
