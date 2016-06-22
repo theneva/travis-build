@@ -151,7 +151,8 @@ module Travis
             end
 
             def default_branches
-              config[:app].respond_to?(:keys) ? config[:app].keys : 'master'
+              app_branch_config = config[:app] || config[:environment]
+              app_branch_config.respond_to?(:keys) ? app_branch_config.keys : 'master'
             end
 
             def option(key, value)

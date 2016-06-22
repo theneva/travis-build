@@ -49,6 +49,13 @@ describe Travis::Build::Addons::Deploy, :sexp do
     it { should match_sexp [:if, '(-z $TRAVIS_PULL_REQUEST) && ($TRAVIS_BRANCH = staging || $TRAVIS_BRANCH = production)'] }
   end
 
+  context 'when engineyard provider has "environment" key to define the branch condition' do
+    let(:data)   { super().merge(branch: 'foobar') }
+    let(:config) { { provider: 'engineyard', environment: { foobar: 'foo' } } }
+
+    it { should match_sexp [:if, '($TRAVIS_BRANCH = foobar)'] }
+  end
+
   describe 'option specific Ruby version' do
     let(:config) { { provider: 'heroku', on: { ruby: 'foo' } } }
 
