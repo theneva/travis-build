@@ -39,7 +39,6 @@ module Travis
         end
 
         def run_addon?(const)
-          sh.echo "#{const} addon is disabled because it is not compatible with sudo-less infrastructure"
           !data.disable_sudo? || const::SUPER_USER_SAFE
         end
 
