@@ -102,7 +102,7 @@ module Travis
             def branch_condition
               return if on[:all_branches] || on[:tags]
               branches  = Array(on[:branch] || default_branches)
-              branches.map { |b| "$TRAVIS_BRANCH = #{b}" }.join(' || ')
+              branches.map { |b| "$TRAVIS_BRANCH = #{b}" }.join(' || ').tap {|x| puts "branch_condition: #{x}"}
             end
 
             def tags_condition
@@ -151,8 +151,9 @@ module Travis
             end
 
             def default_branches
+              puts "config.keys: #{config.keys}"
               app_branch_config = config[:app] || config[:environment]
-              app_branch_config.respond_to?(:keys) ? app_branch_config.keys : 'master'
+              app_branch_config.tap {|x| puts "app_branch_config: #{x}"}.respond_to?(:keys) ? app_branch_config.keys : 'master'
             end
 
             def option(key, value)
