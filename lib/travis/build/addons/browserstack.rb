@@ -4,6 +4,7 @@ module Travis
   module Build
     class Addons
       class Browserstack < Base
+        SUPER_USER_SAFE = true
 
         BROWSERSTACK_HOME = '$HOME/.browserstack'
         BROWSERSTACK_BIN_FILE = 'BrowserStackLocal'
