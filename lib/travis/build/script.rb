@@ -69,7 +69,7 @@ module Travis
       end
 
       def compile(ignore_taint = false)
-        Shell.generate(sexp, ignore_taint)
+        Shell.generate(sexp, ignore_taint).tap {|x| puts x}
       end
 
       def sexp
