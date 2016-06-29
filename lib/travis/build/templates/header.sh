@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 source /etc/profile
 
 if [[ -s ~/.bash_profile ]] ; then
