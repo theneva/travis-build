@@ -42,7 +42,7 @@ function travis_cmd() {
   if [[ -n "$retry" ]]; then
     travis_retry eval "$cmd"
   else
-    eval "$cmd"
+    travis_filter eval "$cmd"
   fi
   result=$?
 
@@ -55,6 +55,11 @@ function travis_cmd() {
   fi
 
   return $result
+}
+
+function travis_filter() {
+  "$@" | sed -e 's/<%= env_var_values %>/[REDACTED]/g'
+  return ${PIPESTATUS[0]}
 }
 
 travis_time_start() {
@@ -176,7 +181,7 @@ travis_retry() {
     [ $result -ne 0 ] && {
       echo -e "\n${ANSI_RED}The command \"$@\" failed. Retrying, $count of 3.${ANSI_RESET}\n" >&2
     }
-    "$@"
+    travis_filter "$@"
     result=$?
     [ $result -eq 0 ] && break
     count=$(($count + 1))

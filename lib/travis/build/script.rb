@@ -137,7 +137,8 @@ module Travis
         end
 
         def header
-          sh.raw template('header.sh', build_dir: BUILD_DIR), pos: 0
+          env_var_values = "(" + data.env_vars.map {|v| v[:value].shellescape}.join("|") + ")"
+          sh.raw template('header.sh', build_dir: BUILD_DIR, env_var_values: env_var_values.untaint), pos: 0
         end
 
         def configure
