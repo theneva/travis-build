@@ -32,11 +32,12 @@ module Travis
           handle_cmd('echo')
         end
 
-        def handle_export(data, options = {})
+        def handle_env(data, options = {})
           key, value, options = handle_secure_vars(*data, options)
-          handle_cmd("export #{key}=#{value}", options)
+          handle_cmd("env '#{key}=#{value}'", options)
         end
-        alias handle_set handle_export
+        alias handle_set handle_env
+        alias handle_export handle_env
 
         def handle_cd(path, options = {})
           if options[:stack]
@@ -145,7 +146,7 @@ module Travis
 
           def handle_secure_vars(key, value, options)
             if options[:echo] && options.delete(:secure)
-              options[:echo] = "export #{key}=[secure]"
+              options[:echo] = "env '#{key}=[secure]'"
               value.untaint
             end
             [key, value, options]

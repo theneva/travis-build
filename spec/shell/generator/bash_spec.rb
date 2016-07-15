@@ -131,15 +131,32 @@ describe Travis::Shell::Generator::Bash, :include_node_helpers do
     end
   end
 
+  describe :env do
+    it 'generates an env command' do
+      @sexp = [:env, ['FOO', 'foo']]
+      expect(code).to eql("env 'FOO=foo'")
+    end
+
+    it 'generates an escaped env command' do
+      @sexp = [:env, ['FOO', 'foo'], echo: true]
+      expect(code).to eql("travis_cmd env\\ \\'FOO\\=foo\\' --echo")
+    end
+  end
+
   describe :export do
-    it 'generates an export command' do
+    it 'generates an env command' do
       @sexp = [:export, ['FOO', 'foo'], echo: true]
-      expect(code).to eql("travis_cmd export\\ FOO\\=foo --echo")
+      expect(code).to eql("travis_cmd env\\ \\'FOO\\=foo\\' --echo")
     end
 
     it 'adds --display FOO=[secure] if the given value is tainted' do
       @sexp = [:export, ['FOO', 'foo'], echo: true, secure: true]
-      expect(code).to eql("travis_cmd export\\ FOO\\=foo --echo --display export\\ FOO\\=\\[secure\\]")
+      expect(code).to eql("travis_cmd env\\ \\'FOO\\=foo\\' --echo --display env\\ \\'FOO\\=\\[secure\\]\\'")
+    end
+
+    it 'supports scoped NPM packages' do
+      @sexp = [:export, ['npm_config_@some-scope:registry', 'http://someregistry.com'], echo: true]
+      expect(code).to eql("travis_cmd env\\ \\'npm_config_@some-scope:registry\\=http://someregistry.com\\' --echo")
     end
   end
 
